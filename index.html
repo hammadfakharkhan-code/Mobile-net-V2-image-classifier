@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Vision - MobileNetV2</title>
+
+    <!-- TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+
+    <!-- MobileNet -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
+
+    <!-- Icons -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fa-solid fa-brain"></i>
+            </div>
+
+            <div>
+                <h2>AI Vision</h2>
+                <span>MobileNetV2</span>
+            </div>
+        </div>
+
+
+        <nav>
+
+            <a href="#" class="nav-item active">
+                <i class="fa-solid fa-house"></i>
+                <span>Home</span>
+            </a>
+
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-camera"></i>
+                <span>Camera</span>
+            </a>
+
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <span>History</span>
+            </a>
+
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-microchip"></i>
+                <span>About Model</span>
+            </a>
+
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-circle-question"></i>
+                <span>How It Works</span>
+            </a>
+
+        </nav>
+
+
+        <div class="model-card">
+
+            <div class="sparkle">
+                ✦
+            </div>
+
+            <h3>Built with</h3>
+
+            <h2>TensorFlow.js</h2>
+
+            <p>
+                Powerful AI model running
+                directly in your browser.
+            </p>
+
+            <div class="network">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="main">
+
+        <!-- HEADER -->
+
+        <header class="header">
+
+            <div class="heading">
+
+                <div class="heading-icon">
+                    ✦
+                </div>
+
+                <div>
+                    <h1>Image Classification</h1>
+
+                    <p>
+                        Upload an image and let AI tell you what's in it.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <button class="dark-button" id="themeButton">
+                <i class="fa-solid fa-moon"></i>
+                Dark Mode
+            </button>
+
+        </header>
+
+
+        <!-- CONTENT -->
+
+        <section class="content">
+
+
+            <!-- ================= LEFT ================= -->
+
+            <div class="left-panel">
+
+                <!-- UPLOAD -->
+
+                <div
+                    class="upload-box"
+                    id="dropZone"
+                >
+
+                    <div class="upload-icon">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                    </div>
+
+                    <h2>Drag & Drop an Image</h2>
+
+                    <p>or</p>
+
+                    <label
+                        for="imageInput"
+                        class="choose-button"
+                    >
+                        <i class="fa-solid fa-image"></i>
+                        Choose Image
+                    </label>
+
+                    <input
+                        type="file"
+                        id="imageInput"
+                        accept="image/*"
+                        hidden
+                    >
+
+                    <small>
+                        JPG, PNG, WEBP up to 10MB
+                    </small>
+
+                </div>
+
+
+                <!-- IMAGE -->
+
+                <div
+                    class="image-container"
+                    id="imageContainer"
+                >
+
+                    <img
+                        id="preview"
+                        alt="Uploaded image"
+                    >
+
+                    <button
+                        id="removeImage"
+                        class="remove-button"
+                    >
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+
+                </div>
+
+
+                <!-- ANALYZE BUTTON -->
+
+                <button
+                    id="analyzeButton"
+                    class="analyze-button"
+                    disabled
+                >
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                    Analyze Image
+
+                </button>
+
+            </div>
+
+
+            <!-- ================= RIGHT ================= -->
+
+            <div class="results-panel">
+
+                <div class="results-header">
+
+                    <div>
+                        <h2>
+                            Prediction Results
+                            <span>✦</span>
+                        </h2>
+
+                        <p>
+                            Top 5 predictions from MobileNetV2
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <!-- MAIN RESULT -->
+
+                <div
+                    class="main-result"
+                    id="mainResult"
+                >
+
+                    <div class="trophy">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+
+                    <div class="main-info">
+
+                        <div class="main-title">
+
+                            <h2 id="mainLabel">
+                                Waiting...
+                            </h2>
+
+                            <strong id="mainProbability">
+                                0%
+                            </strong>
+
+                        </div>
+
+                        <div class="progress">
+                            <div
+                                id="mainProgress"
+                                class="progress-fill"
+                                style="width:0%"
+                            ></div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- TOP PREDICTIONS -->
+
+                <div id="predictions">
+
+                    <div class="prediction">
+
+                        <div class="rank">
+                            2
+                        </div>
+
+                        <div class="prediction-info">
+
+                            <h3>Waiting for image...</h3>
+
+                            <div class="small-progress">
+                                <div style="width:0%"></div>
+                            </div>
+
+                        </div>
+
+                        <strong>0%</strong>
+
+                    </div>
+
+
+                    <div class="prediction">
+
+                        <div class="rank">
+                            3
+                        </div>
+
+                        <div class="prediction-info">
+
+                            <h3>Waiting...</h3>
+
+                            <div class="small-progress">
+                                <div style="width:0%"></div>
+                            </div>
+
+                        </div>
+
+                        <strong>0%</strong>
+
+                    </div>
+
+
+                    <div class="prediction">
+
+                        <div class="rank">
+                            4
+                        </div>
+
+                        <div class="prediction-info">
+
+                            <h3>Waiting...</h3>
+
+                            <div class="small-progress">
+                                <div style="width:0%"></div>
+                            </div>
+
+                        </div>
+
+                        <strong>0%</strong>
+
+                    </div>
+
+
+                    <div class="prediction">
+
+                        <div class="rank">
+                            5
+                        </div>
+
+                        <div class="prediction-info">
+
+                            <h3>Waiting...</h3>
+
+                            <div class="small-progress">
+                                <div style="width:0%"></div>
+                            </div>
+
+                        </div>
+
+                        <strong>0%</strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CONFIDENCE -->
+
+                <div class="confidence-card">
+
+                    <div class="confidence-icon">
+                        <i class="fa-solid fa-chart-simple"></i>
+                    </div>
+
+                    <div>
+
+                        <h3>Model Confidence</h3>
+
+                        <p id="confidenceText">
+                            Upload an image to see model confidence.
+                        </p>
+
+                    </div>
+
+                    <div class="circle">
+
+                        <span id="circleValue">
+                            0%
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ACTIONS -->
+
+                <div class="actions">
+
+                    <button
+                        class="download-button"
+                        id="downloadButton"
+                    >
+
+                        <i class="fa-solid fa-download"></i>
+
+                        Download Results
+
+                    </button>
+
+
+                    <button
+                        class="new-button"
+                        id="newButton"
+                    >
+
+                        <i class="fa-solid fa-rotate"></i>
+
+                        New Image
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- FOOTER -->
+
+        <footer>
+
+            Made with ❤️ using
+            <span>TensorFlow.js</span>
+            &
+            <span>MobileNetV2</span>
+
+        </footer>
+
+    </main>
+
+</div>
+
+
+<!-- LOADING SCREEN -->
+
+<div
+    id="loading"
+    class="loading"
+>
+
+    <div class="loader"></div>
+
+    <h2>Loading AI Model...</h2>
+
+    <p>Please wait while MobileNetV2 loads.</p>
+
+</div>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>
